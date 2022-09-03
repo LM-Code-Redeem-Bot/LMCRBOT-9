@@ -14,16 +14,19 @@ app.get("/:id/:code", async (request, response) => {
     });
     const page = await browser.newPage();
     await page.goto('https://lordsmobile.igg.com/gifts/');
-    await page.type('#iggid', request.params.id)
-    await page.waitForSelector('#cdkey_1')
-    await page.type('#cdkey_1', request.params.code)
-    await page.waitForSelector('#btn_claim_1');
-    await page.click('#btn_claim_1',{delay: 300})
+//     await page.type('#iggid', request.params.id)
+//     await page.waitForSelector('#cdkey_1')
+//     await page.type('#cdkey_1', request.params.code)
+//     await page.waitForSelector('#btn_claim_1');
+//     await page.click('#btn_claim_1',{delay: 300})
+    await page.$eval('#iggid', (el, value) => el.value = value,  request.params.id);
+    await page.$eval('#cdkey_1', (el, value) => el.value = value,  request.params.code);
+    await page.$eval('#btn_claim_1', elem => elem.click());
     const f = await page.$("#msg")
     const text = await (await f.getProperty('textContent')).jsonValue()
     console.log("Text is: " + text)
     response.send(text+'*'+request.params.id+'*'+request.params.code)
-    await page.click('#btn_msg_close',{delay: 20})
+    await page.$eval('#btn_msg_close', elem => elem.click());
     await browser.close();
   } catch (error) {
     console.log(error);
